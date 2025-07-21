@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTMX File Upload Form</title>
+
+    <!-- 1. Pico.css for styling -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css" />
+
+    <!-- 2. HTMX library -->
+    <script src="https://unpkg.com/htmx.org@1.9.12" defer></script>
+</head>
+
+<body>
+
+    <main class="container">
+        <hgroup>
+            <h1>Process Claims</h1>
+            <h2>A LLM based solution for processing contracts and claims.</h2>
+        </hgroup>
+
+        <!-- 
+            The HTMX Form
+            - hx-post="/submit": Sends a POST request to the /submit endpoint.
+            - hx-encoding="multipart/form-data": ESSENTIAL for file uploads.
+            - hx-target="#response-area": Puts the server's response into the div with id="response-area".
+            - hx-swap="innerHTML": Replaces the content of the target div.
+            - hx-indicator="#loading-indicator": Shows the element with id="loading-indicator" during the request.
+        -->
+        <form hx-post="/submit" hx-encoding="multipart/form-data" hx-target="#response-area" hx-swap="innerHTML"
+            hx-indicator="#loading-indicator">
+
+            <!-- Field 1: Text Input for Query -->
+            <label for="query">
+                Your Query
+                <input type="text" id="query" name="query"
+                    placeholder="e.g., 46-year-old male, knee surgery in Pune, 3-month-old insurance policy" required>
+            </label>
+
+            <!-- Field 2: Document Upload -->
+            <label for="document">
+                Upload Document
+                <input type="file" id="document" name="document_file" required>
+            </label>
+
+            <!-- Submit Button and Loading Indicator -->
+            <button type="submit">Submit</button>
+            <span id="loading-indicator" class="htmx-indicator">
+                Submitting...
+            </span>
+
+        </form>
+
+        <hr>
+
+        <!-- Area to display the server response -->
+        <div id="response-area">
+            <p>Server response will appear here.</p>
+        </div>
+
+    </main>
+
+</body>
+
+</html>

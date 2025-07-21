@@ -7,6 +7,7 @@ import (
 	"io"
 	"mime/multipart"
 	"net/http"
+	"os"
 
 	"google.golang.org/genai"
 )
@@ -51,11 +52,13 @@ func handleSubmit(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Define system prompt for claims processing
-	systemPrompt := `You are an expert claims processor specializing in insurance claims analysis. 
-	Analyze the provided document and query to extract relevant information, assess claim validity, 
-	and provide detailed recommendations. Focus on policy coverage, claim amounts, medical necessity, 
-	and any red flags or inconsistencies.`
+	// Read system prompt from file
+	systemPromptBytes, err := os.ReadFile("system_prompt.txt")
+	if err != nil {
+		http.Error(w, "Error reading system prompt file", http.StatusInternalServerError)
+		return
+	}
+	systemPrompt := string(systemPromptBytes)
 
 	// Process with Gemini API
 	response, err := processWithGemini(r.Context(), query, systemPrompt, pdfBytes)
@@ -113,44 +116,4 @@ func processWithGemini(ctx context.Context, query, systemPrompt string, pdfBytes
 // readFileBytes reads all bytes from a multipart file
 func readFileBytes(file multipart.File) ([]byte, error) {
 	return io.ReadAll(file)
-}
-
-func processWithGeminiStream(ctx context.Context, query, systemPrompt string, pdfBytes []byte, w io.Writer) error {
-	client, err := genai.NewClient(ctx, &genai.ClientConfig{
-		HTTPOptions: genai.HTTPOptions{APIVersion: "v1"},
-	})
-	if err != nil {
-		return fmt.Errorf("failed to create genai client: %w", err)
-	}
-
-	parts := []*genai.Part{
-		{Text: fmt.Sprintf("System: %s", systemPrompt)},
-		{Text: fmt.Sprintf("User Query: %s", query)},
-		{InlineData: &genai.Blob{
-			Data:     pdfBytes,
-			MIMEType: "application/pdf",
-		}},
-	}
-
-	content := []*genai.Content{{Parts: parts}}
-
-	// Correct usage with range-over-function
-	for response, err := range client.Models.GenerateContentStream(ctx, "gemini-2.5-flash", content, nil) {
-		if err != nil {
-			return fmt.Errorf("stream error: %w", err)
-		}
-
-		// Process each chunk
-		if response != nil && len(response.Candidates) > 0 {
-			for _, candidate := range response.Candidates {
-				if candidate.Content != nil {
-					for _, part := range candidate.Content.Parts {
-						fmt.Fprint(w, part.Text)
-					}
-				}
-			}
-		}
-	}
-
-	return nil
 }

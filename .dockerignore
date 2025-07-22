@@ -1,0 +1,9 @@
+# Docker build artifacts
+.docker/
+docker-compose.override.yml
+
+# Container volumes
+data/
+
+# ENV
+.env

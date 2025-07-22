@@ -1,0 +1,1797 @@
+This file is a merged representation of the entire codebase, combined into a single document by Repomix.
+
+================================================================
+File Summary
+================================================================
+
+Purpose:
+--------
+This file contains a packed representation of the entire repository's contents.
+It is designed to be easily consumable by AI systems for analysis, code review,
+or other automated processes.
+
+File Format:
+------------
+The content is organized as follows:
+1. This summary section
+2. Repository information
+3. Directory structure
+4. Repository files (if enabled)
+5. Multiple file entries, each consisting of:
+  a. A separator line (================)
+  b. The file path (File: path/to/file)
+  c. Another separator line
+  d. The full contents of the file
+  e. A blank line
+
+Usage Guidelines:
+-----------------
+- This file should be treated as read-only. Any changes should be made to the
+  original repository files, not this packed version.
+- When processing this file, use the file path to distinguish
+  between different files in the repository.
+- Be aware that this file may contain sensitive information. Handle it with
+  the same level of security as you would the original repository.
+
+Notes:
+------
+- Some files may have been excluded based on .gitignore rules and Repomix's configuration
+- Binary files are not included in this packed representation. Please refer to the Repository Structure section for a complete list of file paths, including binary files
+- Files matching patterns in .gitignore are excluded
+- Files matching default ignore patterns are excluded
+- Files are sorted by Git change count (files with more changes are at the bottom)
+
+
+================================================================
+Directory Structure
+================================================================
+templates/
+  home.html
+.dockerignore
+docker-compose.yml
+Dockerfile
+go.mod
+handlers.go
+main.go
+process-claims.code-workspace
+README.md
+repomix-output.xml
+system_prompt.txt
+
+================================================================
+Files
+================================================================
+
+================
+File: .dockerignore
+================
+# Docker build artifacts
+.docker/
+docker-compose.override.yml
+
+# Container volumes
+data/
+
+================
+File: docker-compose.yml
+================
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./templates:/app/templates
+      - ./static:/app/static
+    environment:
+      - GO_ENV=production
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
+
+================
+File: Dockerfile
+================
+# Use the official Go image as the base image
+FROM golang:1.24.5-alpine AS builder
+
+# Set the working directory inside the container
+WORKDIR /app
+
+# Install build dependencies
+RUN apk add --no-cache gcc musl-dev
+
+# Copy go.mod and go.sum files
+COPY go.mod go.sum ./
+
+# Download Go module dependencies
+RUN go mod download
+
+# Copy the source code into the container
+COPY . .
+
+# Build the Go application
+RUN CGO_ENABLED=0 GOOS=linux go build -o process-claims
+
+# Use a minimal alpine image for the final stage
+FROM alpine:latest
+
+# Set working directory
+WORKDIR /app
+
+# Copy the binary from builder stage
+COPY --from=builder /app/process-claims .
+# Copy templates and static files
+COPY --from=builder /app/templates ./templates
+COPY --from=builder /app/static ./static
+
+# Expose port 8080
+EXPOSE 8080
+
+# Command to run the application
+CMD ["./process-claims"]
+
+================
+File: repomix-output.xml
+================
+This file is a merged representation of the entire codebase, combined into a single document by Repomix.
+
+<file_summary>
+This section contains a summary of this file.
+
+<purpose>
+This file contains a packed representation of the entire repository's contents.
+It is designed to be easily consumable by AI systems for analysis, code review,
+or other automated processes.
+</purpose>
+
+<file_format>
+The content is organized as follows:
+1. This summary section
+2. Repository information
+3. Directory structure
+4. Repository files (if enabled)
+5. Multiple file entries, each consisting of:
+  - File path as an attribute
+  - Full contents of the file
+</file_format>
+
+<usage_guidelines>
+- This file should be treated as read-only. Any changes should be made to the
+  original repository files, not this packed version.
+- When processing this file, use the file path to distinguish
+  between different files in the repository.
+- Be aware that this file may contain sensitive information. Handle it with
+  the same level of security as you would the original repository.
+</usage_guidelines>
+
+<notes>
+- Some files may have been excluded based on .gitignore rules and Repomix's configuration
+- Binary files are not included in this packed representation. Please refer to the Repository Structure section for a complete list of file paths, including binary files
+- Files matching patterns in .gitignore are excluded
+- Files matching default ignore patterns are excluded
+- Files are sorted by Git change count (files with more changes are at the bottom)
+</notes>
+
+</file_summary>
+
+<directory_structure>
+templates/
+  home.html
+.dockerignore
+docker-compose.yml
+Dockerfile
+go.mod
+handlers.go
+main.go
+process-claims.code-workspace
+README.md
+system_prompt.txt
+</directory_structure>
+
+<files>
+This section contains the contents of the repository's files.
+
+<file path=".dockerignore">
+# Docker build artifacts
+.docker/
+docker-compose.override.yml
+
+# Container volumes
+data/
+</file>
+
+<file path="docker-compose.yml">
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./templates:/app/templates
+      - ./static:/app/static
+    environment:
+      - GO_ENV=production
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
+</file>
+
+<file path="Dockerfile">
+# Use the official Go image as the base image
+FROM golang:1.24.5-alpine AS builder
+
+# Set the working directory inside the container
+WORKDIR /app
+
+# Install build dependencies
+RUN apk add --no-cache gcc musl-dev
+
+# Copy go.mod and go.sum files
+COPY go.mod go.sum ./
+
+# Download Go module dependencies
+RUN go mod download
+
+# Copy the source code into the container
+COPY . .
+
+# Build the Go application
+RUN CGO_ENABLED=0 GOOS=linux go build -o process-claims
+
+# Use a minimal alpine image for the final stage
+FROM alpine:latest
+
+# Set working directory
+WORKDIR /app
+
+# Copy the binary from builder stage
+COPY --from=builder /app/process-claims .
+# Copy templates and static files
+COPY --from=builder /app/templates ./templates
+COPY --from=builder /app/static ./static
+
+# Expose port 8080
+EXPOSE 8080
+
+# Command to run the application
+CMD ["./process-claims"]
+</file>
+
+<file path="templates/home.html">
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTMX File Upload Form</title>
+
+    <!-- 1. Pico.css for styling -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css" />
+
+    <!-- 2. HTMX library -->
+    <script src="https://unpkg.com/htmx.org@1.9.12" defer></script>
+</head>
+
+<body>
+
+    <main class="container">
+        <hgroup>
+            <h1>Process Claims</h1>
+            <h2>A LLM based solution for processing contracts and claims.</h2>
+        </hgroup>
+
+        <!-- 
+            The HTMX Form
+            - hx-post="/submit": Sends a POST request to the /submit endpoint.
+            - hx-encoding="multipart/form-data": ESSENTIAL for file uploads.
+            - hx-target="#response-area": Puts the server's response into the div with id="response-area".
+            - hx-swap="innerHTML": Replaces the content of the target div.
+            - hx-indicator="#loading-indicator": Shows the element with id="loading-indicator" during the request.
+        -->
+        <form hx-post="/submit" hx-encoding="multipart/form-data" hx-target="#response-area" hx-swap="innerHTML"
+            hx-indicator="#loading-indicator">
+
+            <!-- Field 1: Text Input for Query -->
+            <label for="query">
+                Your Query
+                <input type="text" id="query" name="query"
+                    placeholder="e.g., 46-year-old male, knee surgery in Pune, 3-month-old insurance policy" required>
+            </label>
+
+            <!-- Field 2: Document Upload -->
+            <label for="document">
+                Upload Document
+                <input type="file" id="document" name="document_file" required>
+            </label>
+
+            <!-- Submit Button and Loading Indicator -->
+            <button type="submit">Submit</button>
+            <span id="loading-indicator" class="htmx-indicator">
+                Submitting...
+            </span>
+
+        </form>
+
+        <hr>
+
+        <!-- Area to display the server response -->
+        <div id="response-area">
+            <p>Server response will appear here.</p>
+        </div>
+
+    </main>
+
+</body>
+
+</html>
+</file>
+
+<file path="go.mod">
+module github.com/42yash/process-claims
+
+go 1.24.5
+
+require (
+	github.com/go-chi/chi/v5 v5.2.2
+	github.com/go-chi/cors v1.2.2
+	google.golang.org/genai v1.16.0
+)
+
+require (
+	cloud.google.com/go v0.116.0 // indirect
+	cloud.google.com/go/auth v0.9.3 // indirect
+	cloud.google.com/go/compute/metadata v0.5.0 // indirect
+	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
+	github.com/google/go-cmp v0.6.0 // indirect
+	github.com/google/s2a-go v0.1.8 // indirect
+	github.com/googleapis/enterprise-certificate-proxy v0.3.4 // indirect
+	github.com/gorilla/websocket v1.5.3 // indirect
+	go.opencensus.io v0.24.0 // indirect
+	golang.org/x/crypto v0.27.0 // indirect
+	golang.org/x/net v0.29.0 // indirect
+	golang.org/x/sys v0.25.0 // indirect
+	golang.org/x/text v0.18.0 // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20240903143218-8af14fe29dc1 // indirect
+	google.golang.org/grpc v1.66.2 // indirect
+	google.golang.org/protobuf v1.34.2 // indirect
+)
+</file>
+
+<file path="main.go">
+package main
+
+import (
+	"log"
+	"net/http"
+
+	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
+	"github.com/go-chi/cors"
+)
+
+func main() {
+	r := chi.NewRouter()
+
+	// Middleware
+	r.Use(middleware.Logger)
+	r.Use(cors.Handler(cors.Options{
+		AllowedOrigins:   []string{"*"},
+		AllowedMethods:   []string{"GET", "POST", "OPTIONS"},
+		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
+		ExposedHeaders:   []string{"Link"},
+		AllowCredentials: true,
+		MaxAge:           300,
+	}))
+
+	// Serve static files
+	fileServer := http.FileServer(http.Dir("./static"))
+	r.Handle("/static/*", http.StripPrefix("/static/", fileServer))
+
+	// Routes
+	r.Get("/", handleHome)
+	r.Post("/submit", handleSubmit)
+
+	log.Printf("Starting server on http://localhost:8080")
+
+	if err := http.ListenAndServe(":8080", r); err != nil {
+		log.Fatalf("Could not start server: %v", err)
+	}
+}
+</file>
+
+<file path="process-claims.code-workspace">
+{
+    "folders": [
+        {
+            "path": "."
+        }
+    ]
+}
+</file>
+
+<file path="README.md">
+# 🏥 Process Claims - AI-Powered Insurance Claims Processing
+
+<div align="center">
+
+![Go Version](https://img.shields.io/badge/Go-1.24.5-00ADD8?style=for-the-badge&logo=go)
+![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)
+![AI Powered](https://img.shields.io/badge/AI-Google%20Gemini%202.5%20Flash-orange?style=for-the-badge)
+![Status](https://img.shields.io/badge/Status-Active-brightgreen?style=for-the-badge)
+
+*🤖 Revolutionizing insurance claim processing with intelligent document analysis and AI-driven decision making*
+
+[Features](#-features) • [Quick Start](#-quick-start) • [Installation](#-installation) • [Usage](#-usage) • [API](#-api-reference)
+
+</div>
+
+---
+
+## 🌟 Overview
+
+**Process Claims** is an intelligent, AI-powered web application that transforms the way insurance claims are processed. Built for the Bajaj Hackathon, this system leverages Google's cutting-edge Gemini 2.5 Flash AI model to analyze insurance documents, understand natural language queries, and provide detailed, structured responses with clear justifications.
+
+### 🎯 The Problem We Solve
+
+Traditional insurance claim processing is:
+- ⏱️ **Time-consuming** - Manual review takes hours or days
+- 📄 **Error-prone** - Human oversight can miss critical details
+- 💰 **Expensive** - Requires extensive human resources
+- 🔍 **Inconsistent** - Different reviewers may reach different conclusions
+
+### 💡 Our Solution
+
+Process Claims automates and enhances the entire workflow:
+- 🚀 **Instant Analysis** - Get detailed claim assessments in seconds
+- 🎯 **High Accuracy** - AI-powered semantic understanding beats keyword matching
+- 📊 **Structured Output** - Consistent, traceable decision-making
+- 🔗 **Source Attribution** - Every decision linked to specific document clauses
+
+---
+
+## ✨ Features
+
+<table>
+<tr>
+<td>
+
+### 🧠 **Intelligent Document Analysis**
+- Multi-format document support (PDF, etc.)
+- Semantic understanding vs keyword matching
+- Context-aware information extraction
+- Complex clause interpretation
+
+</td>
+<td>
+
+### 🔍 **Natural Language Processing**
+- Plain English query processing
+- Entity extraction and categorization
+- Intent recognition and classification
+- Contextual relationship mapping
+
+</td>
+</tr>
+<tr>
+<td>
+
+### ⚡ **Real-time Processing**
+- Instant claim evaluation
+- Live web interface with HTMX
+- Background processing capabilities
+- Responsive design for all devices
+
+</td>
+<td>
+
+### 📈 **Structured Decision Making**
+- JSON-formatted responses
+- Confidence scoring
+- Detailed justifications
+- Recommendation engine
+
+</td>
+</tr>
+</table>
+
+---
+
+## 🚀 Quick Start
+
+Get up and running in under 5 minutes!
+
+```bash
+# Clone the repository
+git clone https://github.com/42yash/process-claims.git
+cd process-claims
+
+# Install dependencies
+go mod download
+
+# Set up your Google AI API key
+export GOOGLE_API_KEY="your-api-key-here"
+
+# Build and run
+go build -o process-claims
+./process-claims
+```
+
+🌐 **Open your browser to** `http://localhost:8080`
+
+---
+
+## 📦 Installation
+
+### Prerequisites
+
+- **Go 1.24.5+** - [Download Go](https://golang.org/dl/)
+- **Google AI API Key** - [Get your key](https://makersuite.google.com/app/apikey)
+
+### System Requirements
+
+| Component | Minimum | Recommended |
+|-----------|---------|-------------|
+| **RAM** | 2GB | 4GB+ |
+| **Storage** | 100MB | 500MB+ |
+| **Network** | Internet connection for AI API |
+
+### Step-by-Step Installation
+
+#### 1. Install Go (Ubuntu/Debian)
+```bash
+sudo apt update
+sudo apt install -y golang-go
+go version  # Verify installation
+```
+
+#### 2. Clone and Setup Project
+```bash
+# Clone the repository
+git clone https://github.com/42yash/process-claims.git
+cd process-claims
+
+# Download dependencies
+go mod download
+go mod tidy
+
+# Create static directory
+mkdir -p static
+```
+
+#### 3. Configure Environment
+```bash
+# Get your Google AI API key from: https://makersuite.google.com/app/apikey
+export GOOGLE_API_KEY="your-actual-api-key-here"
+
+# Optional: Set custom port (default: 8080)
+export PORT=8080
+```
+
+#### 4. Build and Run
+```bash
+# Build the application
+go build -o process-claims
+
+# Run the application
+./process-claims
+```
+
+### Alternative: Development Mode
+```bash
+# Run directly without building
+go run .
+```
+
+---
+
+## 🎮 Usage
+
+### Web Interface
+
+1. **Navigate** to `http://localhost:8080`
+2. **Enter your query** in plain English:
+   ```
+   "46-year-old male, knee surgery in Pune, 3-month-old insurance policy"
+   ```
+3. **Upload** your insurance document (PDF)
+4. **Click Submit** and get instant analysis!
+
+### Query Examples
+
+<details>
+<summary>🏥 <strong>Medical Claims</strong></summary>
+
+```
+"35-year-old female, cardiac surgery, emergency procedure, 2-year policy"
+"Diabetes treatment for 60-year-old, outpatient care, premium policy"
+"Accident-related orthopedic surgery, 28-year-old male, basic coverage"
+```
+</details>
+
+<details>
+<summary>🚗 <strong>Vehicle Claims</strong></summary>
+
+```
+"Car accident damage, 2019 Honda Civic, comprehensive coverage"
+"Motorcycle theft, 2021 Yamaha, third-party insurance"
+"Flood damage to vehicle, comprehensive policy, Mumbai location"
+```
+</details>
+
+<details>
+<summary>🏠 <strong>Property Claims</strong></summary>
+
+```
+"Fire damage to residential property, full coverage policy"
+"Burglary claim, electronics stolen, home insurance"
+"Water damage from pipe burst, apartment coverage"
+```
+</details>
+
+---
+
+## 🏗️ Architecture
+
+```mermaid
+graph TD
+    A[Web Browser] -->|HTTP Request| B[Go Web Server]
+    B --> C[Chi Router]
+    C --> D[File Upload Handler]
+    C --> E[Query Processor]
+    
+    D --> F[PDF Parser]
+    E --> G[System Prompt]
+    
+    F --> H[Google Gemini API]
+    G --> H
+    E --> H
+    
+    H --> I[AI Analysis Engine]
+    I --> J[Structured Response]
+    J --> K[JSON Formatter]
+    K --> L[Web Response]
+    L --> A
+```
+
+### Technology Stack
+
+| Layer | Technology | Purpose |
+|-------|------------|---------|
+| **Frontend** | HTML5, HTMX, Pico.css | Modern, responsive UI |
+| **Backend** | Go 1.24.5 | High-performance server |
+| **Router** | Chi v5 | Fast HTTP routing |
+| **AI Engine** | Google Gemini 2.5 Flash | Document analysis |
+| **File Handling** | Multipart forms | PDF upload processing |
+
+---
+
+## 📊 API Reference
+
+### Endpoints
+
+#### `GET /`
+Returns the main application interface.
+
+#### `POST /submit`
+Processes insurance claim analysis.
+
+**Request Format:**
+```http
+POST /submit
+Content-Type: multipart/form-data
+
+query: "Your natural language query"
+document_file: [PDF file]
+```
+
+**Response Format:**
+```json
+{
+    "decision": "approved|rejected|pending",
+    "amount": 50000.00,
+    "confidence": "high",
+    "justification": {
+        "primary_reasoning": "Policy covers the specified medical procedure",
+        "supporting_clauses": [
+            {
+                "clause_reference": "Section 4.2.1",
+                "clause_text": "Emergency medical procedures are covered...",
+                "application": "Patient's cardiac surgery qualifies as emergency procedure"
+            }
+        ],
+        "key_factors": {
+            "entity_analysis": {
+                "extracted_entities": ["35-year-old female", "cardiac surgery", "emergency"],
+                "missing_information": ["exact procedure cost", "hospital details"]
+            },
+            "rule_application": "Emergency medical coverage rules applied",
+            "calculation_method": "Base coverage amount with emergency multiplier"
+        }
+    },
+    "recommendations": [
+        "Verify hospital accreditation",
+        "Obtain detailed medical reports"
+    ],
+    "flags": [
+        "High-value claim requires additional verification"
+    ]
+}
+```
+
+---
+
+## 🛠️ Configuration
+
+### Environment Variables
+
+| Variable | Description | Default | Required |
+|----------|-------------|---------|----------|
+| `GOOGLE_API_KEY` | Google Gemini AI API key | - | ✅ Yes |
+| `PORT` | Server port | `8080` | ❌ No |
+
+### File Structure
+
+```
+process-claims/
+├── 📁 .git/                 # Git repository
+├── 📄 go.mod                # Go module definition
+├── 📄 go.sum                # Go module checksums
+├── 📄 handlers.go           # HTTP request handlers
+├── 📄 main.go               # Application entry point
+├── 📄 system_prompt.txt     # AI system instructions
+├── 📁 static/               # Static web assets
+├── 📁 templates/            # HTML templates
+│   └── 📄 home.html         # Main web interface
+└── 📄 README.md             # This file
+```
+
+---
+
+## 🤝 Contributing
+
+We welcome contributions! Here's how you can help:
+
+### Development Setup
+
+```bash
+# Fork the repository on GitHub
+# Clone your fork
+git clone https://github.com/YOUR-USERNAME/process-claims.git
+cd process-claims
+
+# Create a feature branch
+git checkout -b feature/amazing-feature
+
+# Make your changes
+# Test your changes
+go test ./...
+
+# Commit and push
+git commit -m "Add amazing feature"
+git push origin feature/amazing-feature
+
+# Create a Pull Request on GitHub
+```
+
+### Code Style
+
+- Follow Go conventions and `gofmt` formatting
+- Write clear, descriptive commit messages
+- Add tests for new functionality
+- Update documentation as needed
+
+---
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+---
+
+## 🙏 Acknowledgments
+
+- **Google AI Team** - For the powerful Gemini 2.5 Flash model
+- **Go Community** - For excellent libraries and tools
+- **Bajaj Hackathon** - For inspiring this innovation
+- **Chi Router** - For fast, lightweight HTTP routing
+- **HTMX** - For modern, dynamic web interactions
+
+---
+
+## 🆘 Support
+
+<div align="center">
+
+**Need Help?**
+
+[📧 Email](mailto:support@process-claims.com) • [💬 Issues](https://github.com/42yash/process-claims/issues) • [📖 Wiki](https://github.com/42yash/process-claims/wiki)
+
+---
+
+**Made with ❤️ for Bajaj Hackathon 2025**
+
+*Transforming Insurance Claims Processing, One AI Decision at a Time*
+
+</div>
+</file>
+
+<file path="handlers.go">
+package main
+
+import (
+	"context"
+	"fmt"
+	"html/template"
+	"io"
+	"mime/multipart"
+	"net/http"
+	"os"
+
+	"google.golang.org/genai"
+)
+
+func handleHome(w http.ResponseWriter, r *http.Request) {
+	tmpl := template.Must(template.ParseFiles("templates/home.html"))
+
+	if err := tmpl.Execute(w, nil); err != nil {
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
+}
+
+// HandleSubmit processes the form submission with query, system prompt, and PDF
+func handleSubmit(w http.ResponseWriter, r *http.Request) {
+	// Parse the multipart form
+	err := r.ParseMultipartForm(32 << 20) // 32 MB max memory
+	if err != nil {
+		http.Error(w, "Error parsing form", http.StatusBadRequest)
+		return
+	}
+
+	// Extract form values
+	query := r.FormValue("query")
+	if query == "" {
+		http.Error(w, "Query is required", http.StatusBadRequest)
+		return
+	}
+
+	// Get the uploaded file
+	file, _, err := r.FormFile("document_file")
+	if err != nil {
+		http.Error(w, "Error retrieving file", http.StatusBadRequest)
+		return
+	}
+	defer file.Close()
+
+	// Read PDF content
+	pdfBytes, err := readFileBytes(file)
+	if err != nil {
+		http.Error(w, "Error reading PDF file", http.StatusInternalServerError)
+		return
+	}
+
+	// Read system prompt from file
+	systemPromptBytes, err := os.ReadFile("system_prompt.txt")
+	if err != nil {
+		http.Error(w, "Error reading system prompt file", http.StatusInternalServerError)
+		return
+	}
+	systemPrompt := string(systemPromptBytes)
+
+	// Process with Gemini API
+	response, err := processWithGemini(r.Context(), query, systemPrompt, pdfBytes)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Error processing with Gemini: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	// Set content type for HTML response
+	w.Header().Set("Content-Type", "text/html")
+
+	// Return formatted response
+	fmt.Fprintf(w, `
+		<div class="response-content">
+			<h3>Analysis Results</h3>
+			<div class="analysis-result">
+				<pre>%s</pre>
+			</div>
+		</div>
+	`, response)
+}
+
+// processWithGemini handles the actual API call to Gemini
+func processWithGemini(ctx context.Context, query, systemPrompt string, pdfBytes []byte) (string, error) {
+	// Create Gemini client using the new Gen AI SDK
+	client, err := genai.NewClient(ctx, &genai.ClientConfig{
+		HTTPOptions: genai.HTTPOptions{APIVersion: "v1"},
+	})
+	if err != nil {
+		return "", fmt.Errorf("failed to create genai client: %w", err)
+	}
+
+	// Create multipart content with system prompt, user query, and PDF
+	parts := []*genai.Part{
+		{Text: fmt.Sprintf("System: %s", systemPrompt)},
+		{Text: fmt.Sprintf("User Query: %s", query)},
+		{InlineData: &genai.Blob{
+			Data:     pdfBytes,
+			MIMEType: "application/pdf",
+		}},
+	}
+
+	// Create content payload
+	content := []*genai.Content{{Parts: parts}}
+
+	// Call Gemini 2.5 Flash model (latest as of July 2025)
+	resp, err := client.Models.GenerateContent(ctx, "gemini-2.5-flash", content, nil)
+	if err != nil {
+		return "", fmt.Errorf("failed to generate content: %w", err)
+	}
+
+	return resp.Text(), nil
+}
+
+// readFileBytes reads all bytes from a multipart file
+func readFileBytes(file multipart.File) ([]byte, error) {
+	return io.ReadAll(file)
+}
+</file>
+
+<file path="system_prompt.txt">
+You are an expert document analysis system specializing in intelligent query processing and information retrieval. Your task is to analyze unstructured documents and natural language queries to extract relevant information, make informed decisions, and provide structured responses with clear justifications.
+
+## Primary Functions:
+1. **Query Parsing**: Extract and structure key entities, attributes, and requirements from natural language queries
+2. **Semantic Retrieval**: Identify relevant clauses, rules, and conditions from provided documents using contextual understanding rather than keyword matching
+3. **Decision Logic**: Apply retrieved information to determine appropriate outcomes based on document-defined criteria
+4. **Explanation Generation**: Provide clear justifications linking decisions to specific document sources
+
+## Analysis Process:
+1. Parse the input query to identify:
+   - Key entities (persons, locations, objects, dates, amounts)
+   - Attributes and qualifiers (age, duration, type, status)
+   - Requirements or conditions being evaluated
+   - Implicit context or domain indicators
+
+2. Search the provided documents for:
+   - Relevant rules, policies, or procedures
+   - Applicable conditions and exceptions
+   - Calculation methods or decision criteria
+   - Precedence or hierarchy of rules
+
+3. Evaluate and synthesize information to:
+   - Determine the most applicable rules or clauses
+   - Apply logic and conditions as defined in the documents
+   - Calculate amounts, determine eligibility, or assess compliance
+   - Identify any conflicting or ambiguous requirements
+
+4. Generate response with:
+   - Clear decision or recommendation
+   - Quantitative results where applicable
+   - Detailed justification mapping to specific document clauses
+   - Confidence level and any limitations or assumptions
+
+## Response Format:
+Return only valid JSON without additional text or formatting:
+
+{
+    "decision": "approved/rejected/pending/compliant/non-compliant/eligible/ineligible",
+    "amount": [numerical value if applicable, null otherwise],
+    "confidence": "high/medium/low",
+    "justification": {
+        "primary_reasoning": "Brief explanation of the main decision logic",
+        "supporting_clauses": [
+            {
+                "clause_reference": "Document section/clause identifier",
+                "clause_text": "Relevant excerpt from the document",
+                "application": "How this clause applies to the current query"
+            }
+        ],
+        "key_factors": {
+            "entity_analysis": {
+                "extracted_entities": ["list of key entities identified from query"],
+                "missing_information": ["any critical information not provided in query"]
+            },
+            "rule_application": "Summary of how document rules were applied",
+            "calculation_method": "Method used for any numerical determinations"
+        }
+    },
+    "recommendations": ["actionable recommendations if applicable"],
+    "flags": ["any concerns, inconsistencies, or areas requiring human review"]
+}
+
+## Quality Standards:
+- Prioritize semantic understanding over keyword matching
+- Handle vague, incomplete, or ambiguous queries gracefully
+- Provide traceable justifications linked to source documents
+- Maintain consistency across similar queries
+- Flag uncertain or conflicting information for human review
+- Adapt analysis depth and focus based on query context and available document content
+</file>
+
+</files>
+
+================
+File: templates/home.html
+================
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTMX File Upload Form</title>
+
+    <!-- 1. Pico.css for styling -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css" />
+
+    <!-- 2. HTMX library -->
+    <script src="https://unpkg.com/htmx.org@1.9.12" defer></script>
+</head>
+
+<body>
+
+    <main class="container">
+        <hgroup>
+            <h1>Process Claims</h1>
+            <h2>A LLM based solution for processing contracts and claims.</h2>
+        </hgroup>
+
+        <!-- 
+            The HTMX Form
+            - hx-post="/submit": Sends a POST request to the /submit endpoint.
+            - hx-encoding="multipart/form-data": ESSENTIAL for file uploads.
+            - hx-target="#response-area": Puts the server's response into the div with id="response-area".
+            - hx-swap="innerHTML": Replaces the content of the target div.
+            - hx-indicator="#loading-indicator": Shows the element with id="loading-indicator" during the request.
+        -->
+        <form hx-post="/submit" hx-encoding="multipart/form-data" hx-target="#response-area" hx-swap="innerHTML"
+            hx-indicator="#loading-indicator">
+
+            <!-- Field 1: Text Input for Query -->
+            <label for="query">
+                Your Query
+                <input type="text" id="query" name="query"
+                    placeholder="e.g., 46-year-old male, knee surgery in Pune, 3-month-old insurance policy" required>
+            </label>
+
+            <!-- Field 2: Document Upload -->
+            <label for="document">
+                Upload Document
+                <input type="file" id="document" name="document_file" required>
+            </label>
+
+            <!-- Submit Button and Loading Indicator -->
+            <button type="submit">Submit</button>
+            <span id="loading-indicator" class="htmx-indicator">
+                Submitting...
+            </span>
+
+        </form>
+
+        <hr>
+
+        <!-- Area to display the server response -->
+        <div id="response-area">
+            <p>Server response will appear here.</p>
+        </div>
+
+    </main>
+
+</body>
+
+</html>
+
+================
+File: go.mod
+================
+module github.com/42yash/process-claims
+
+go 1.24.5
+
+require (
+	github.com/go-chi/chi/v5 v5.2.2
+	github.com/go-chi/cors v1.2.2
+	google.golang.org/genai v1.16.0
+)
+
+require (
+	cloud.google.com/go v0.116.0 // indirect
+	cloud.google.com/go/auth v0.9.3 // indirect
+	cloud.google.com/go/compute/metadata v0.5.0 // indirect
+	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
+	github.com/google/go-cmp v0.6.0 // indirect
+	github.com/google/s2a-go v0.1.8 // indirect
+	github.com/googleapis/enterprise-certificate-proxy v0.3.4 // indirect
+	github.com/gorilla/websocket v1.5.3 // indirect
+	go.opencensus.io v0.24.0 // indirect
+	golang.org/x/crypto v0.27.0 // indirect
+	golang.org/x/net v0.29.0 // indirect
+	golang.org/x/sys v0.25.0 // indirect
+	golang.org/x/text v0.18.0 // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20240903143218-8af14fe29dc1 // indirect
+	google.golang.org/grpc v1.66.2 // indirect
+	google.golang.org/protobuf v1.34.2 // indirect
+)
+
+================
+File: main.go
+================
+package main
+
+import (
+	"log"
+	"net/http"
+
+	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
+	"github.com/go-chi/cors"
+)
+
+func main() {
+	r := chi.NewRouter()
+
+	// Middleware
+	r.Use(middleware.Logger)
+	r.Use(cors.Handler(cors.Options{
+		AllowedOrigins:   []string{"*"},
+		AllowedMethods:   []string{"GET", "POST", "OPTIONS"},
+		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
+		ExposedHeaders:   []string{"Link"},
+		AllowCredentials: true,
+		MaxAge:           300,
+	}))
+
+	// Serve static files
+	fileServer := http.FileServer(http.Dir("./static"))
+	r.Handle("/static/*", http.StripPrefix("/static/", fileServer))
+
+	// Routes
+	r.Get("/", handleHome)
+	r.Post("/submit", handleSubmit)
+
+	log.Printf("Starting server on http://localhost:8080")
+
+	if err := http.ListenAndServe(":8080", r); err != nil {
+		log.Fatalf("Could not start server: %v", err)
+	}
+}
+
+================
+File: process-claims.code-workspace
+================
+{
+    "folders": [
+        {
+            "path": "."
+        }
+    ]
+}
+
+================
+File: README.md
+================
+# 🏥 Process Claims - AI-Powered Insurance Claims Processing
+
+<div align="center">
+
+![Go Version](https://img.shields.io/badge/Go-1.24.5-00ADD8?style=for-the-badge&logo=go)
+![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)
+![AI Powered](https://img.shields.io/badge/AI-Google%20Gemini%202.5%20Flash-orange?style=for-the-badge)
+![Status](https://img.shields.io/badge/Status-Active-brightgreen?style=for-the-badge)
+
+*🤖 Revolutionizing insurance claim processing with intelligent document analysis and AI-driven decision making*
+
+[Features](#-features) • [Quick Start](#-quick-start) • [Installation](#-installation) • [Usage](#-usage) • [API](#-api-reference)
+
+</div>
+
+---
+
+## 🌟 Overview
+
+**Process Claims** is an intelligent, AI-powered web application that transforms the way insurance claims are processed. Built for the Bajaj Hackathon, this system leverages Google's cutting-edge Gemini 2.5 Flash AI model to analyze insurance documents, understand natural language queries, and provide detailed, structured responses with clear justifications.
+
+### 🎯 The Problem We Solve
+
+Traditional insurance claim processing is:
+- ⏱️ **Time-consuming** - Manual review takes hours or days
+- 📄 **Error-prone** - Human oversight can miss critical details
+- 💰 **Expensive** - Requires extensive human resources
+- 🔍 **Inconsistent** - Different reviewers may reach different conclusions
+
+### 💡 Our Solution
+
+Process Claims automates and enhances the entire workflow:
+- 🚀 **Instant Analysis** - Get detailed claim assessments in seconds
+- 🎯 **High Accuracy** - AI-powered semantic understanding beats keyword matching
+- 📊 **Structured Output** - Consistent, traceable decision-making
+- 🔗 **Source Attribution** - Every decision linked to specific document clauses
+
+---
+
+## ✨ Features
+
+<table>
+<tr>
+<td>
+
+### 🧠 **Intelligent Document Analysis**
+- Multi-format document support (PDF, etc.)
+- Semantic understanding vs keyword matching
+- Context-aware information extraction
+- Complex clause interpretation
+
+</td>
+<td>
+
+### 🔍 **Natural Language Processing**
+- Plain English query processing
+- Entity extraction and categorization
+- Intent recognition and classification
+- Contextual relationship mapping
+
+</td>
+</tr>
+<tr>
+<td>
+
+### ⚡ **Real-time Processing**
+- Instant claim evaluation
+- Live web interface with HTMX
+- Background processing capabilities
+- Responsive design for all devices
+
+</td>
+<td>
+
+### 📈 **Structured Decision Making**
+- JSON-formatted responses
+- Confidence scoring
+- Detailed justifications
+- Recommendation engine
+
+</td>
+</tr>
+</table>
+
+---
+
+## 🚀 Quick Start
+
+Get up and running in under 5 minutes!
+
+```bash
+# Clone the repository
+git clone https://github.com/42yash/process-claims.git
+cd process-claims
+
+# Install dependencies
+go mod download
+
+# Set up your Google AI API key
+export GOOGLE_API_KEY="your-api-key-here"
+
+# Build and run
+go build -o process-claims
+./process-claims
+```
+
+🌐 **Open your browser to** `http://localhost:8080`
+
+---
+
+## 📦 Installation
+
+### Prerequisites
+
+- **Go 1.24.5+** - [Download Go](https://golang.org/dl/)
+- **Google AI API Key** - [Get your key](https://makersuite.google.com/app/apikey)
+
+### System Requirements
+
+| Component | Minimum | Recommended |
+|-----------|---------|-------------|
+| **RAM** | 2GB | 4GB+ |
+| **Storage** | 100MB | 500MB+ |
+| **Network** | Internet connection for AI API |
+
+### Step-by-Step Installation
+
+#### 1. Install Go (Ubuntu/Debian)
+```bash
+sudo apt update
+sudo apt install -y golang-go
+go version  # Verify installation
+```
+
+#### 2. Clone and Setup Project
+```bash
+# Clone the repository
+git clone https://github.com/42yash/process-claims.git
+cd process-claims
+
+# Download dependencies
+go mod download
+go mod tidy
+
+# Create static directory
+mkdir -p static
+```
+
+#### 3. Configure Environment
+```bash
+# Get your Google AI API key from: https://makersuite.google.com/app/apikey
+export GOOGLE_API_KEY="your-actual-api-key-here"
+
+# Optional: Set custom port (default: 8080)
+export PORT=8080
+```
+
+#### 4. Build and Run
+```bash
+# Build the application
+go build -o process-claims
+
+# Run the application
+./process-claims
+```
+
+### Alternative: Development Mode
+```bash
+# Run directly without building
+go run .
+```
+
+---
+
+## 🎮 Usage
+
+### Web Interface
+
+1. **Navigate** to `http://localhost:8080`
+2. **Enter your query** in plain English:
+   ```
+   "46-year-old male, knee surgery in Pune, 3-month-old insurance policy"
+   ```
+3. **Upload** your insurance document (PDF)
+4. **Click Submit** and get instant analysis!
+
+### Query Examples
+
+<details>
+<summary>🏥 <strong>Medical Claims</strong></summary>
+
+```
+"35-year-old female, cardiac surgery, emergency procedure, 2-year policy"
+"Diabetes treatment for 60-year-old, outpatient care, premium policy"
+"Accident-related orthopedic surgery, 28-year-old male, basic coverage"
+```
+</details>
+
+<details>
+<summary>🚗 <strong>Vehicle Claims</strong></summary>
+
+```
+"Car accident damage, 2019 Honda Civic, comprehensive coverage"
+"Motorcycle theft, 2021 Yamaha, third-party insurance"
+"Flood damage to vehicle, comprehensive policy, Mumbai location"
+```
+</details>
+
+<details>
+<summary>🏠 <strong>Property Claims</strong></summary>
+
+```
+"Fire damage to residential property, full coverage policy"
+"Burglary claim, electronics stolen, home insurance"
+"Water damage from pipe burst, apartment coverage"
+```
+</details>
+
+---
+
+## 🏗️ Architecture
+
+```mermaid
+graph TD
+    A[Web Browser] -->|HTTP Request| B[Go Web Server]
+    B --> C[Chi Router]
+    C --> D[File Upload Handler]
+    C --> E[Query Processor]
+    
+    D --> F[PDF Parser]
+    E --> G[System Prompt]
+    
+    F --> H[Google Gemini API]
+    G --> H
+    E --> H
+    
+    H --> I[AI Analysis Engine]
+    I --> J[Structured Response]
+    J --> K[JSON Formatter]
+    K --> L[Web Response]
+    L --> A
+```
+
+### Technology Stack
+
+| Layer | Technology | Purpose |
+|-------|------------|---------|
+| **Frontend** | HTML5, HTMX, Pico.css | Modern, responsive UI |
+| **Backend** | Go 1.24.5 | High-performance server |
+| **Router** | Chi v5 | Fast HTTP routing |
+| **AI Engine** | Google Gemini 2.5 Flash | Document analysis |
+| **File Handling** | Multipart forms | PDF upload processing |
+
+---
+
+## 📊 API Reference
+
+### Endpoints
+
+#### `GET /`
+Returns the main application interface.
+
+#### `POST /submit`
+Processes insurance claim analysis.
+
+**Request Format:**
+```http
+POST /submit
+Content-Type: multipart/form-data
+
+query: "Your natural language query"
+document_file: [PDF file]
+```
+
+**Response Format:**
+```json
+{
+    "decision": "approved|rejected|pending",
+    "amount": 50000.00,
+    "confidence": "high",
+    "justification": {
+        "primary_reasoning": "Policy covers the specified medical procedure",
+        "supporting_clauses": [
+            {
+                "clause_reference": "Section 4.2.1",
+                "clause_text": "Emergency medical procedures are covered...",
+                "application": "Patient's cardiac surgery qualifies as emergency procedure"
+            }
+        ],
+        "key_factors": {
+            "entity_analysis": {
+                "extracted_entities": ["35-year-old female", "cardiac surgery", "emergency"],
+                "missing_information": ["exact procedure cost", "hospital details"]
+            },
+            "rule_application": "Emergency medical coverage rules applied",
+            "calculation_method": "Base coverage amount with emergency multiplier"
+        }
+    },
+    "recommendations": [
+        "Verify hospital accreditation",
+        "Obtain detailed medical reports"
+    ],
+    "flags": [
+        "High-value claim requires additional verification"
+    ]
+}
+```
+
+---
+
+## 🛠️ Configuration
+
+### Environment Variables
+
+| Variable | Description | Default | Required |
+|----------|-------------|---------|----------|
+| `GOOGLE_API_KEY` | Google Gemini AI API key | - | ✅ Yes |
+| `PORT` | Server port | `8080` | ❌ No |
+
+### File Structure
+
+```
+process-claims/
+├── 📁 .git/                 # Git repository
+├── 📄 go.mod                # Go module definition
+├── 📄 go.sum                # Go module checksums
+├── 📄 handlers.go           # HTTP request handlers
+├── 📄 main.go               # Application entry point
+├── 📄 system_prompt.txt     # AI system instructions
+├── 📁 static/               # Static web assets
+├── 📁 templates/            # HTML templates
+│   └── 📄 home.html         # Main web interface
+└── 📄 README.md             # This file
+```
+
+---
+
+## 🤝 Contributing
+
+We welcome contributions! Here's how you can help:
+
+### Development Setup
+
+```bash
+# Fork the repository on GitHub
+# Clone your fork
+git clone https://github.com/YOUR-USERNAME/process-claims.git
+cd process-claims
+
+# Create a feature branch
+git checkout -b feature/amazing-feature
+
+# Make your changes
+# Test your changes
+go test ./...
+
+# Commit and push
+git commit -m "Add amazing feature"
+git push origin feature/amazing-feature
+
+# Create a Pull Request on GitHub
+```
+
+### Code Style
+
+- Follow Go conventions and `gofmt` formatting
+- Write clear, descriptive commit messages
+- Add tests for new functionality
+- Update documentation as needed
+
+---
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+---
+
+## 🙏 Acknowledgments
+
+- **Google AI Team** - For the powerful Gemini 2.5 Flash model
+- **Go Community** - For excellent libraries and tools
+- **Bajaj Hackathon** - For inspiring this innovation
+- **Chi Router** - For fast, lightweight HTTP routing
+- **HTMX** - For modern, dynamic web interactions
+
+---
+
+## 🆘 Support
+
+<div align="center">
+
+**Need Help?**
+
+[📧 Email](mailto:support@process-claims.com) • [💬 Issues](https://github.com/42yash/process-claims/issues) • [📖 Wiki](https://github.com/42yash/process-claims/wiki)
+
+---
+
+**Made with ❤️ for Bajaj Hackathon 2025**
+
+*Transforming Insurance Claims Processing, One AI Decision at a Time*
+
+</div>
+
+================
+File: handlers.go
+================
+package main
+
+import (
+	"context"
+	"fmt"
+	"html/template"
+	"io"
+	"mime/multipart"
+	"net/http"
+	"os"
+
+	"google.golang.org/genai"
+)
+
+func handleHome(w http.ResponseWriter, r *http.Request) {
+	tmpl := template.Must(template.ParseFiles("templates/home.html"))
+
+	if err := tmpl.Execute(w, nil); err != nil {
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
+}
+
+// HandleSubmit processes the form submission with query, system prompt, and PDF
+func handleSubmit(w http.ResponseWriter, r *http.Request) {
+	// Parse the multipart form
+	err := r.ParseMultipartForm(32 << 20) // 32 MB max memory
+	if err != nil {
+		http.Error(w, "Error parsing form", http.StatusBadRequest)
+		return
+	}
+
+	// Extract form values
+	query := r.FormValue("query")
+	if query == "" {
+		http.Error(w, "Query is required", http.StatusBadRequest)
+		return
+	}
+
+	// Get the uploaded file
+	file, _, err := r.FormFile("document_file")
+	if err != nil {
+		http.Error(w, "Error retrieving file", http.StatusBadRequest)
+		return
+	}
+	defer file.Close()
+
+	// Read PDF content
+	pdfBytes, err := readFileBytes(file)
+	if err != nil {
+		http.Error(w, "Error reading PDF file", http.StatusInternalServerError)
+		return
+	}
+
+	// Read system prompt from file
+	systemPromptBytes, err := os.ReadFile("system_prompt.txt")
+	if err != nil {
+		http.Error(w, "Error reading system prompt file", http.StatusInternalServerError)
+		return
+	}
+	systemPrompt := string(systemPromptBytes)
+
+	// Process with Gemini API
+	response, err := processWithGemini(r.Context(), query, systemPrompt, pdfBytes)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Error processing with Gemini: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	// Set content type for HTML response
+	w.Header().Set("Content-Type", "text/html")
+
+	// Return formatted response
+	fmt.Fprintf(w, `
+		<div class="response-content">
+			<h3>Analysis Results</h3>
+			<div class="analysis-result">
+				<pre>%s</pre>
+			</div>
+		</div>
+	`, response)
+}
+
+// processWithGemini handles the actual API call to Gemini
+func processWithGemini(ctx context.Context, query, systemPrompt string, pdfBytes []byte) (string, error) {
+	// Create Gemini client using the new Gen AI SDK
+	client, err := genai.NewClient(ctx, &genai.ClientConfig{
+		HTTPOptions: genai.HTTPOptions{APIVersion: "v1"},
+	})
+	if err != nil {
+		return "", fmt.Errorf("failed to create genai client: %w", err)
+	}
+
+	// Create multipart content with system prompt, user query, and PDF
+	parts := []*genai.Part{
+		{Text: fmt.Sprintf("System: %s", systemPrompt)},
+		{Text: fmt.Sprintf("User Query: %s", query)},
+		{InlineData: &genai.Blob{
+			Data:     pdfBytes,
+			MIMEType: "application/pdf",
+		}},
+	}
+
+	// Create content payload
+	content := []*genai.Content{{Parts: parts}}
+
+	// Call Gemini 2.5 Flash model (latest as of July 2025)
+	resp, err := client.Models.GenerateContent(ctx, "gemini-2.5-flash", content, nil)
+	if err != nil {
+		return "", fmt.Errorf("failed to generate content: %w", err)
+	}
+
+	return resp.Text(), nil
+}
+
+// readFileBytes reads all bytes from a multipart file
+func readFileBytes(file multipart.File) ([]byte, error) {
+	return io.ReadAll(file)
+}
+
+================
+File: system_prompt.txt
+================
+You are an expert document analysis system specializing in intelligent query processing and information retrieval. Your task is to analyze unstructured documents and natural language queries to extract relevant information, make informed decisions, and provide structured responses with clear justifications.
+
+## Primary Functions:
+1. **Query Parsing**: Extract and structure key entities, attributes, and requirements from natural language queries
+2. **Semantic Retrieval**: Identify relevant clauses, rules, and conditions from provided documents using contextual understanding rather than keyword matching
+3. **Decision Logic**: Apply retrieved information to determine appropriate outcomes based on document-defined criteria
+4. **Explanation Generation**: Provide clear justifications linking decisions to specific document sources
+
+## Analysis Process:
+1. Parse the input query to identify:
+   - Key entities (persons, locations, objects, dates, amounts)
+   - Attributes and qualifiers (age, duration, type, status)
+   - Requirements or conditions being evaluated
+   - Implicit context or domain indicators
+
+2. Search the provided documents for:
+   - Relevant rules, policies, or procedures
+   - Applicable conditions and exceptions
+   - Calculation methods or decision criteria
+   - Precedence or hierarchy of rules
+
+3. Evaluate and synthesize information to:
+   - Determine the most applicable rules or clauses
+   - Apply logic and conditions as defined in the documents
+   - Calculate amounts, determine eligibility, or assess compliance
+   - Identify any conflicting or ambiguous requirements
+
+4. Generate response with:
+   - Clear decision or recommendation
+   - Quantitative results where applicable
+   - Detailed justification mapping to specific document clauses
+   - Confidence level and any limitations or assumptions
+
+## Response Format:
+Return only valid JSON without additional text or formatting:
+
+{
+    "decision": "approved/rejected/pending/compliant/non-compliant/eligible/ineligible",
+    "amount": [numerical value if applicable, null otherwise],
+    "confidence": "high/medium/low",
+    "justification": {
+        "primary_reasoning": "Brief explanation of the main decision logic",
+        "supporting_clauses": [
+            {
+                "clause_reference": "Document section/clause identifier",
+                "clause_text": "Relevant excerpt from the document",
+                "application": "How this clause applies to the current query"
+            }
+        ],
+        "key_factors": {
+            "entity_analysis": {
+                "extracted_entities": ["list of key entities identified from query"],
+                "missing_information": ["any critical information not provided in query"]
+            },
+            "rule_application": "Summary of how document rules were applied",
+            "calculation_method": "Method used for any numerical determinations"
+        }
+    },
+    "recommendations": ["actionable recommendations if applicable"],
+    "flags": ["any concerns, inconsistencies, or areas requiring human review"]
+}
+
+## Quality Standards:
+- Prioritize semantic understanding over keyword matching
+- Handle vague, incomplete, or ambiguous queries gracefully
+- Provide traceable justifications linked to source documents
+- Maintain consistency across similar queries
+- Flag uncertain or conflicting information for human review
+- Adapt analysis depth and focus based on query context and available document content
+
+
+
+
+================================================================
+End of Codebase
+================================================================

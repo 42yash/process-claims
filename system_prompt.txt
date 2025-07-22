@@ -35,9 +35,9 @@ You are an expert document analysis system specializing in intelligent query pro
 Return only valid JSON without additional text or formatting, do not include backticks that indicate it is json. Also validate the json before actually returning to make sure that it is valid:
 
 {
-    "decision": "approved/rejected/pending/compliant/non-compliant/eligible/ineligible",
+    "decision": "approved/rejected/compliant/non-compliant/eligible/ineligible",
     "amount": [numerical value if applicable, null otherwise],
-    "confidence": "high/medium/low",
+    "confidence": [numerical value from 0 to 100],
     "justification": {
         "primary_reasoning": "Brief explanation of the main decision logic",
         "supporting_clauses": [
